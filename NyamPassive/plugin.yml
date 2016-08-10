@@ -1,0 +1,17 @@
+name: NyamPassive
+main: NyamPassive\Main
+author: JNCOM, tiget
+version: "1.0 - A"
+api:
+- 1.13.0
+- 2.0.0
+
+commands:
+ passive:
+  description: 패시브 변경 명령어
+   permissions: NyamPassive.passive
+   
+permissions:
+ NyamPassive.passive:
+  default: OP
+  

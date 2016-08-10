@@ -31,10 +31,11 @@ class Main extends PluginBase implements Listener{
 	}
 	public function onSpawn(PlayerRespawnEvent $e){
 		$player = $e->getPlayer();
-		$player->addEffect(Effect::getEffect(21)->setDuration(2147483648)->setAmplifier(5));
-		
+		$player->getEffect(10)->setDuration(60)->setAmplifier(8);
+		$player->sendMessage("부활후 3초간 재생효과(*8)가 붙습니다");
 	}
 	public function onKill(PlayerDeathEvent $e){
+		$victim = $e->getEntity();
 		$damager = $e->getEntity()->getLastDamageCause()->getDamager()->getName();
 		$passivea=$this->passive->get($damager);
 		if($passivea=1){
@@ -45,6 +46,11 @@ class Main extends PluginBase implements Listener{
 			$effect3 = Effect::getEffect(8)->setDuration(100)->setAmplifier(5);
 			$damager->addEffect($effect3);
 		}
+		//플레이어 처치시 신속2 힘3 점프강화5 패시브 구현
+		if($passivea=2){
+			$damager->setHealth($this->getHealth() + 10);
+		}
+		//나름대로 구현은 했는데 이게 맞는건지 모르겠네요 수정 환영입니다 :)
 	}
 	public function onJoin(PlayerJoinEvent $e){
 		$pname = $e->getPlayer()->getName();

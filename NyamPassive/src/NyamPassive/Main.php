@@ -58,7 +58,7 @@ class Main extends PluginBase implements Listener{
 		$passivej = $this->passive->get($pname);
 		if (!$pjoint == true){
 			$this->players->set($e->getPlayer()->getName(),true);
-			$this->passive->set($e->getPlayer()->getName(), rand(1,12));
+			$this->passive->set($e->getPlayer()->getName(), mt_rand(1,12));
 			$this->passive->save();
 			$this->players->save();
 			$passivej = $this->passive->get($pname);

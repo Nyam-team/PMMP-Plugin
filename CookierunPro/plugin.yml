@@ -1,0 +1,11 @@
+name: CookierunPro
+main: CookierunPro\Main
+author: JNCOM
+version: "1.0 - A"
+api:
+- 1.13.0
+- 2.0.0
+
+commands:
+ cookie:
+  description: "CookierunPro Manager"

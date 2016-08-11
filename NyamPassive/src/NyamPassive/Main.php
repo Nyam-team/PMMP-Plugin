@@ -12,6 +12,7 @@ use pocketmine\entity\Effect;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\Player;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use function pocketmine\kill;
 class Main extends PluginBase implements Listener{
 	private $passive,$psdb;
 	private $players, $playersdb;
@@ -66,7 +67,7 @@ class Main extends PluginBase implements Listener{
 					if ($passivea == 2){
 						$damager->setHealth($this->getHealth() + 10);
 					}
-					//부활 구현
+					//플레이어 처치시 damager은 hp10을 회복함
 					if ($passivea == 3){
 						 $this->cool2[$killedn] = $this->makeTimeStamp();
 						 $respawnr = $this->cool1[$killedn] - $this->cool2[$killedn];
@@ -76,6 +77,15 @@ class Main extends PluginBase implements Listener{
 						 	$z = $killed->getZ();
 						 	$killed->setSpawn($x, $y, $z);
 						 }
+						//부활 구현
+					}
+					if($passivea == 4){
+						$this-> cool2[$killedn]=$this->makeTimeStamp();
+						$cooltime=$this->cool1[$killedn] - $this->cool2[$killedn];
+						if($cooltime >= 300);
+						kill($damagern);
+						$e->setDeathMessage($killedn."님이".$damagern."님과 함께 사망하였습니다");
+						//어렴풋이 따라해서 길동무 패시브 완성 ->불굴(HP2 깎일때마다 저항1 생성) 패시브 구현 어려움 :(
 					}
 				}
 			}
@@ -92,14 +102,18 @@ class Main extends PluginBase implements Listener{
 			$this->players->save();
 			$passivej = $this->passive->get($pname);
 			if ($passivej == 1){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브 코드는 1번.");
+				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 미치광이입니다.");
 			}
 			if ($passivej == 2){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브 코드는 2번.");
+				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 흡수입니다.");
 			}
 			if ($passivej == 3){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브 코드는 3번.");
+				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 부활입니다.");
 			    $this->cool1[$pname] = $this->makeTimeStamp();
+			}
+			if ($passivej == 4){
+				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 길동무입니다");
+				$this->cool1[$pname] = $this->makeTimeStamp();
 			}
 		}
 		if (!$this->players->exists($e->getPlayer()->getName())){

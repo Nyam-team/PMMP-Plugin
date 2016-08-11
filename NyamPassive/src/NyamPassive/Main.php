@@ -29,7 +29,7 @@ class Main extends PluginBase implements Listener{
 	}
 	public function onEnable(){
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-		$this->getLogger()->info("RPGGame");
+		$this->getLogger()->info("NyamPassive :)");
 		@mkdir($this->getDataFolder());
 		$this->passive = new Config($this->getDataFolder()."passive.yml", Config::YAML);
 		$this->players = new Config($this->getDataFolder()."players.yml", Config::YAML);
@@ -121,6 +121,14 @@ class Main extends PluginBase implements Listener{
 			$this->players->save();
 		}
 	}
+	public function onCommand(CommandSender $sender,Command $command, $label,array $args){
+		$sname = $sender->getName();
+		if ($command == "setPassive"){
+						$this->setPassive($sender, $args[1]);
+						$sender->sendMessage("강제적으로 패시브가 변경되었습니다.");
+					}
+				
+		}
 	public function setPassive($player,$number){
 		$pname = $player->getName();
 		$this->passive->set($pname,$number);

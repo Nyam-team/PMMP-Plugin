@@ -12,7 +12,9 @@ use pocketmine\entity\Effect;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\Player;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use function pocketmine\kill;
+use pocketmine\command\CommandSender;
+use pocketmine\command\Command;
+use pocketmine\event\entity\EntityDamageEvent;
 class Main extends PluginBase implements Listener{
 	private $passive,$psdb;
 	private $players, $playersdb;
@@ -40,7 +42,7 @@ class Main extends PluginBase implements Listener{
 	}
 	public function onSpawn(PlayerRespawnEvent $e){
 		$player = $e->getPlayer();
-		$player->getEffect(10)->setDuration(60)->setAmplifier(8);
+		$player->addEffect(Effect::getEffect(6)->setDuration(60)->setAmplifier(7));
 		$player->sendMessage("부활후 3초간 재생효과(*8)가 붙습니다");
 	}
 	public function onKill(PlayerDeathEvent $e){
@@ -56,16 +58,17 @@ class Main extends PluginBase implements Listener{
 					$damagern = $damager->getName();
 					$passivea=$this->passive->get($damagern);
 					if ($passivea == 1){
-						$effect1 = Effect::getEffect(1)->setDuration(100)->setAmplifier(2);
+						$effect1 = Effect::getEffect(1)->setDuration(100)->setAmplifier(1);
 						$damager->addEffect($effect1);
-						$effect2 = Effect::getEffect(5)->setDuration(100)->setAmplifier(3);
+						$effect2 = Effect::getEffect(5)->setDuration(100)->setAmplifier(2);
 						$damager->addEffect($effect2);
-						$effect3 = Effect::getEffect(8)->setDuration(100)->setAmplifier(5);
+						$effect3 = Effect::getEffect(8)->setDuration(100)->setAmplifier(4);
 						$damager->addEffect($effect3);
 					}
 					//플레이어 처치시 신속2 힘3 점프강화5 패시브 구현
 					if ($passivea == 2){
-						$damager->setHealth($this->getHealth() + 10);
+						$damager->setHealth($damager->getHealth() + 10);
+						$damager->sendMessage("패시브의 효과로 체력 10을 회복합니다.");
 					}
 					//플레이어 처치시 damager은 hp10을 회복함
 					if ($passivea == 3){
@@ -75,7 +78,13 @@ class Main extends PluginBase implements Listener{
 						 	$x = $killed->getX();
 						 	$y = $killed->getY();
 						 	$z = $killed->getZ();
+						 	$killed->teleport($x, $y, $z);
 						 	$killed->setSpawn($x, $y, $z);
+						 	$this->cool1[$killedn] = $this->makeTimeStamp();
+						 	$killed->sendMessage("패시브의 효과로 죽은 자리에서 스폰됩니다.");
+						 }
+						 if ($respawnr < 300){
+						 	$killed->sendMessage("아직 쿨타임이 지나지 않아 정상적으로 스폰 됩니다.");
 						 }
 						//부활 구현
 					}
@@ -83,9 +92,9 @@ class Main extends PluginBase implements Listener{
 						$this-> cool2[$killedn]=$this->makeTimeStamp();
 						$cooltime=$this->cool1[$killedn] - $this->cool2[$killedn];
 						if($cooltime >= 300);
-						kill($damagern);
+						$damager->kill();
 						$e->setDeathMessage($killedn."님이".$damagern."님과 함께 사망하였습니다");
-						//어렴풋이 따라해서 길동무 패시브 완성 ->불굴(HP2 깎일때마다 저항1 생성) 패시브 구현 어려움 :(
+						$this->cool1[$killedn] = $this->makeTimeStamp();
 					}
 				}
 			}
@@ -115,6 +124,17 @@ class Main extends PluginBase implements Listener{
 				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 길동무입니다");
 				$this->cool1[$pname] = $this->makeTimeStamp();
 			}
+			if ($passivej == 5){
+				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 섬광입니다.");
+				$this->cool1[$pname] = $this->makeTimeStamp();
+			}
+			if ($passivej == 6){
+				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 발악입니다.");
+				$this->cool1[$pname] = $this->makeTimeStamp();
+			}
+			if ($passivej == 7){
+				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 광기입니다.");
+			}
 		}
 		if (!$this->players->exists($e->getPlayer()->getName())){
 			$this->players->set($e->getPlayer()->getName(),false);
@@ -126,9 +146,15 @@ class Main extends PluginBase implements Listener{
 		if ($command == "setPassive"){
 						$this->setPassive($sender, $args[1]);
 						$sender->sendMessage("강제적으로 패시브가 변경되었습니다.");
-					}
-				
-		}
+		}		
+    }
+    public function onAttack(EntityDamageByEntityEvent $e){
+    	$damager = $e->getDamager();
+    	$entity = $e->getEntity();
+    	$passivea = $this->viewPassive($damager);
+    	if ($passivea == 5){
+    	}
+    }
 	public function setPassive($player,$number){
 		$pname = $player->getName();
 		$this->passive->set($pname,$number);

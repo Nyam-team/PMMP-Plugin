@@ -14,7 +14,7 @@ use pocketmine\Player;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
-use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 class Main extends PluginBase implements Listener{
 	private $passive,$psdb;
 	private $players, $playersdb;
@@ -43,7 +43,7 @@ class Main extends PluginBase implements Listener{
 	public function onSpawn(PlayerRespawnEvent $e){
 		$player = $e->getPlayer();
 		$player->addEffect(Effect::getEffect(6)->setDuration(60)->setAmplifier(7));
-		$player->sendMessage("부활후 3초간 재생효과(*8)가 붙습니다");
+		$player->sendMessage("부활후 3초간 재생효과(*7)가 붙습니다");
 	}
 	public function onKill(PlayerDeathEvent $e){
 		$killed = $e->getEntity();
@@ -104,36 +104,48 @@ class Main extends PluginBase implements Listener{
 		$pname = $e->getPlayer()->getName();
 		$pjoint = $this->players->get($pname);
 		$passivej = $this->passive->get($pname);
+		$e->getPlayer()->sendMessage(TextFormat::DARK_GREEN."============");
 		if (!$pjoint == true){
 			$this->players->set($e->getPlayer()->getName(),true);
 			$this->passive->set($e->getPlayer()->getName(), mt_rand(1,4));
 			$this->passive->save();
 			$this->players->save();
 			$passivej = $this->passive->get($pname);
-			if ($passivej == 1){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 미치광이입니다.");
+			if($passivej == 1){
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 미치광이==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==미치광이:Kill마다 신속1,힘2,점프강화4 가 붙습니다==");
 			}
 			if ($passivej == 2){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 흡수입니다.");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN."==패시브 흡수==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==흡수:Kill마다 체력 10 즉시 회복==");
 			}
 			if ($passivej == 3){
-				$e->getPlayer()->sendMessage(TextFormat::RED."당신의 패시브는 부활입니다.");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN."==패시브 부활==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==부활 (쿨타임:5분):죽은 자리에서 다시 스폰됩니다==");
 			    $this->cool1[$pname] = $this->makeTimeStamp();
 			}
 			if ($passivej == 4){
-				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 길동무입니다");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 길동무==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==길동무 (쿨타임:5분):죽인 사람과 동반 자살을 합니다==");
 				$this->cool1[$pname] = $this->makeTimeStamp();
 			}
 			if ($passivej == 5){
-				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 섬광입니다.");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 섬광==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==섬광(쿨타임:10초):대상 타격시 실명 3초를 부여합니다==");
 				$this->cool1[$pname] = $this->makeTimeStamp();
 			}
 			if ($passivej == 6){
-				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 발악입니다.");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 발악==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==발악(쿨타임:200초):HP가 4이하로 떨어질시 힘10이 30초간 부여됩니다");
 				$this->cool1[$pname] = $this->makeTimeStamp();
 			}
 			if ($passivej == 7){
-				$e->getPlayer()->sendMessage(TextFormat::RED. "당신의 패시브는 광기입니다.");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 광기입니다==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==광기:대상 타격시 3초간 신속2가 붙습니다==");
+			}
+			if ($passivej == 8){
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==패시브 발화==");
+				$e->getPlayer()->sendMessage(TextFormat::GREEN. "==발화:상대 타격시 3초간 화염에 휩싸이게 합니다==");
 			}
 		}
 		if (!$this->players->exists($e->getPlayer()->getName())){
